@@ -1,0 +1,96 @@
+﻿<head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>TensorFlow.js Webcam Activation</title>
+
+
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                    }
+
+
+                    button {
+                        padding: 10px;
+                        background-color: #4CAF50;
+                        color: #fff;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin-top: 20px;
+                        width: 100px;
+                        height: 30px;
+                    }
+
+
+                    button:hover {
+                        background-color: #45a049;
+                    }
+
+
+                    #label-container {
+                        margin-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+            <button type="button" onclick="activateModel()">Start</button>
+
+
+            <div id="label-container"></div>
+
+
+            <div id="webcam-container"></div>
+
+
+            <script>
+                const URL = "https://teachablemachine.withgoogle.com/models/HuEa5lKfw/";
+
+
+                let model, webcam, labelContainer, maxPredictions;
+
+
+                async function activateModel() {
+                    const modelURL = URL + "model.json";
+                    const metadataURL = URL + "metadata.json";
+
+
+                    model = await tmImage.load(modelURL, metadataURL);
+                    maxPredictions = model.getTotalClasses();
+
+
+                    webcam = new tmImage.Webcam(200, 200, true);
+                    await webcam.setup();
+                    await webcam.play();
+                    window.requestAnimationFrame(loop);
+
+
+                    document.getElementById("webcam-container").appendChild(webcam.canvas);
+                    labelContainer = document.getElementById("label-container");
+                    for (let i = 0; i < maxPredictions; i++) {
+                        labelContainer.appendChild(document.createElement("div"));
+                    }
+                }
+
+
+                async function loop() {
+                    webcam.update();
+                    await predict();
+                    window.requestAnimationFrame(loop);
+                }
+
+
+                async function predict() {
+                    const prediction = await model.predict(webcam.canvas);
+                    for (let i = 0; i < maxPredictions; i++) {
+                        const classPrediction =
+                            prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                        labelContainer.childNodes[i].innerHTML = classPrediction;
+                    }
+                }
+
+
+        
+            </script>
+            </body>
