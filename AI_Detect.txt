@@ -45,7 +45,7 @@
 
 
             <script>
-                const URL = "https://teachablemachine.withgoogle.com/models/HuEa5lKfw/";
+                const URL = "";
 
 
                 let model, webcam, labelContainer, maxPredictions;
